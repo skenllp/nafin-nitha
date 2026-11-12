@@ -79,9 +79,10 @@
         <div class="divider reveal" style="--d:.1s" aria-hidden="true"><img src="assets/art/divider.svg" alt="" width="240" height="40"></div>
 
         <p class="bismillah reveal" style="--d:.2s" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-        <p class="translation reveal" style="--d:.3s">In the name of Allah, the Most Gracious, the Most Merciful.</p>
+        <p class="translation reveal" style="--d:.5s">With the blessings of Almighty Allah,</p>
+        <!-- <p class="translation reveal" style="--d:.3s">In the name of Allah, the Most Gracious, the Most Merciful.</p> -->
 
-        <p class="lead reveal" style="--d:.5s">With the blessings of Almighty Allah,</p>
+        
 
         <div class="hosts reveal" style="--d:.65s">
           <p class="hosts-names">Rehim Madathil <span class="amp-s">&amp;</span> Subaida Rehim</p>
@@ -179,6 +180,11 @@
       </section>
     </div>
 
+    <!-- Welcome card -->
+    <section class="page welcome-card" aria-label="Welcome card">
+      <img class="welcome-card-img reveal" src="image.png" alt="Welcome to Nitha Subair and Nafis Rehim, with childhood photos of the couple. Your presence and prayers will make our special day more meaningful. With warm regards, Kalathiyath Family." width="1026" height="1536" loading="lazy" decoding="async">
+    </section>
+
     <!-- Blessings -->
     <section class="closing" aria-labelledby="closing-heading">
       <h2 class="sr-only" id="closing-heading">Family blessings and closing</h2>
@@ -204,5 +210,66 @@
   </button>
 
   <script src="script.js" defer></script>
+
+  <!-- Falling flower petals -->
+  <canvas id="petals" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;"></canvas>
+  <script>
+  (function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var c = document.getElementById('petals'), ctx = c.getContext('2d');
+    var colors = ['#f2d4cf', '#e8bfb8', '#f7e6dc', '#d9b77a', '#efd9a7', '#fbf3ea'];
+    var W, H, dpr, petals = [];
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      c.width = W * dpr; c.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function make(top) {
+      return {
+        x: Math.random() * W,
+        y: top ? -20 : Math.random() * H,
+        s: 4.5 + Math.random() * 5.5,
+        vy: 0.2 + Math.random() * 0.35,
+        sway: Math.random() * Math.PI * 2,
+        swaySpd: 0.005 + Math.random() * 0.01,
+        rot: (Math.random() - 0.5) * 0.6,
+        vr: (Math.random() - 0.5) * 0.015,
+        flip: Math.random() * Math.PI * 2,
+        color: colors[(Math.random() * colors.length) | 0],
+        a: 0.55 + Math.random() * 0.4
+      };
+    }
+    var heart = new Path2D('M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.9 4.5 6.6 4.5c2.2 0 3.6 1.2 5.4 3.2 1.8-2 3.2-3.2 5.4-3.2 3.7 0 5.7 3.9 4.2 7.3C19.5 16.4 12 21 12 21z');
+    function drawPetal(p) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.scale(Math.abs(Math.cos(p.flip)) * 0.6 + 0.4, 1);
+      var k = p.s / 12; ctx.scale(k, k); ctx.translate(-12, -12);
+      ctx.globalAlpha = p.a;
+      ctx.fillStyle = p.color; ctx.fill(heart);
+      ctx.globalAlpha = p.a * 0.5;
+      ctx.strokeStyle = '#b89a5e'; ctx.lineWidth = 0.8; ctx.stroke(heart);
+      ctx.restore();
+    }
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < petals.length; i++) {
+        var p = petals[i];
+        p.sway += p.swaySpd; p.flip += 0.012;
+        p.y += p.vy; p.x += Math.sin(p.sway) * 0.35 + 0.05; p.rot += p.vr;
+        if (p.y > H + 20 || p.x > W + 20) petals[i] = make(true);
+        drawPetal(p);
+      }
+      requestAnimationFrame(tick);
+    }
+    resize();
+    var n = Math.round(Math.min(14, Math.max(7, W / 90)));
+    for (var i = 0; i < n; i++) petals.push(make(false));
+    addEventListener('resize', resize);
+    tick();
+  })();
+  </script>
 </body>
 </html>
